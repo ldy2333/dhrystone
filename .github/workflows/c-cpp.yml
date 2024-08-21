@@ -1,27 +1,24 @@
-name: Compile C File on Windows
-
-on:
-  push:
-    branches: [master]
+name: MSYS2
+on: [push, pull_request]
 
 jobs:
-  build:
+  msys2-ucrt64:
     runs-on: windows-latest
-
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
       - uses: actions/checkout@v3
-
-      - name: Install MinGW
-        uses: msys2/setup-msys2@v2
+      - uses: msys2/setup-msys2@v2
         with:
-          msys2_arch: x86_64
-
-      - name: Install GCC
-        run: pacman -Syu --noconfirm mingw-w64-x86_64-gcc
-
-      - name: Compile C file
-        working-directory: v2.2
-        run: gcc dry.c -o dry.exe
+          msystem: UCRT64
+          update: true
+          install: git mingw-w64-ucrt-x86_64-gcc
+      - name: CI-Build
+        run: |
+          echo 'Running in MSYS2!'
+          cd ./v2.2
+          gcc dry.c -o dry.exe
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
