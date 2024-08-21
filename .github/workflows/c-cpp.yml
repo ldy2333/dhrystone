@@ -1,0 +1,30 @@
+name: Compile C File on Windows
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install MinGW
+        uses: msys2/setup-msys2@v2
+        with:
+          msys2_arch: x86_64
+
+      - name: Install GCC
+        run: pacman -Syu --noconfirm mingw-w64-x86_64-gcc
+
+      - name: Compile C file
+        working-directory: v2.2
+        run: gcc dry.c -o dry.exe
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: compiled-executable
+          path: v2.2/dry.exe
